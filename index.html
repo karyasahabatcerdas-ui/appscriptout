@@ -51,7 +51,7 @@
     </div>
 
     <!-- URL Iframe GAS Anda -->
-    <iframe id="iframeGAS" src="https://script.google.com/macros/s/AKfycbx_q6BSMBL5D0TfrvdrSNbIVhiV-Zyvmbn4KZMGtiWCvxay8NzVuR89X2lUBwBexov4/exec" ></iframe>
+    <iframe id="iframeGAS" src="https://script.google.com/macros/s/AKfycbyco2DE6wk0CFl3-vm4Bb87uCohlMPKfD645v8QHVWvpLMZDnKkCENX_zliXGUEuSXF/exec" ></iframe>
     
         <div style="margin-top: 10px;">
           <button onclick="testKirim('HIJAU')">Set Iframe Hijau</button>
@@ -101,29 +101,42 @@
         }
 
         function submitData() {
+            // 1. Ambil URL otomatis dari atribut SRC iframe
             const iframe = document.getElementById('iframeGAS');
+            const urlGAS = iframe.src; 
+        
+            // 2. Siapkan Payload
             const sel = document.getElementById('selectOption');
-            
             const payload = {
                 teks: document.getElementById('teks').value,
                 pass: document.getElementById('password').value,
                 tgl: document.getElementById('tanggal').value,
                 id_sel: sel.value,
                 txt_sel: sel.options[sel.selectedIndex].text,
-                img: base64Gambar // Tetap sertakan base64
+                img: base64Gambar // String Base64 dari input file
             };
         
-            // PENTING: Ubah Object menjadi STRING agar tidak di-drop oleh Google
-            const paketString = JSON.stringify({
-                tipe: "SIMPAN_DATA",
-                data: payload
-            });
+            console.log("Mengirim ke URL:", urlGAS);
         
-            console.log("GitHub: Mengirim paket string ke GAS...");
-            
-            // Kirim ke contentWindow
-            iframe.contentWindow.postMessage(paketString, "*");
+            // 3. Eksekusi Fetch (Silent POST)
+            fetch(urlGAS, {
+                method: 'POST',
+                mode: 'no-cors', // Menghindari CORS error
+                cache: 'no-cache',
+                headers: { "Content-Type": "text/plain" },
+                body: JSON.stringify(payload)
+            })
+            .then(() => {
+                alert("Data berhasil dikirim ke Apps Script!");
+                clearUI();
+            })
+            .catch(err => {
+                console.error("Gagal mengirim:", err);
+                alert("Terjadi kesalahan pengiriman.");
+            });
         }
+
+
 
 
 
