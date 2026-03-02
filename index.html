@@ -51,7 +51,7 @@
     </div>
 
     <!-- URL Iframe GAS Anda -->
-    <iframe id="iframeGAS" src="https://script.google.com/macros/s/AKfycbzBoycSarFwQ6ppVo_YeqeqEE4GJrgYrdx1_XvppZPc_94h_oS71IcR1BImL7oEccYP/exec" ></iframe>
+    <iframe id="iframeGAS" src="https://script.google.com/macros/s/AKfycby-PGFW8854lee5ELk2zvGsYSlpsY_ebUbzU6WrAUWr1GUrAH1PggdB0FI5wDZNCZlF/exec" ></iframe>
 
     <script>
         const iframe = document.getElementById('iframeGAS');
@@ -81,30 +81,33 @@
             }
         }
 
-        function submitData() {           
-            
+        function submitData() {
             const iframe = document.getElementById('iframeGAS');
-            const sel = document.getElementById('selectOption');
             
+            // Ambil data dari form
+            const sel = document.getElementById('selectOption');
             const payload = {
                 teks: document.getElementById('teks').value,
                 pass: document.getElementById('password').value,
                 tgl: document.getElementById('tanggal').value,
                 id_sel: sel.value,
                 txt_sel: sel.options[sel.selectedIndex].text,
-                img: base64Gambar
+                img: base64Gambar // String Base64
             };
-          
-          // Pastikan kita menargetkan window di dalam iframe
-          const targetWindow = iframe.contentWindow;
-          
-          if (targetWindow) {
-            console.log("GitHub: Mencoba jabat tangan dengan GAS...");
-            // Gunakan "*" agar melewati validasi host 'expected' yang berubah-ubah
-            targetWindow.postMessage({ tipe: "SIMPAN_DATA", data: payload }, "*");
-          } else {
-            console.error("GitHub: Jendela Iframe tidak ditemukan!");
-          }
+        
+            // PENTING: Gunakan targetWindow dari iframe secara eksplisit
+            const targetWindow = iframe.contentWindow;
+        
+            if (targetWindow) {
+                console.log("GitHub: Mengirim ke Iframe...");
+                // Paket harus berupa Object sederhana
+                targetWindow.postMessage({
+                    tipe: "SIMPAN_DATA",
+                    data: payload
+                }, "*"); 
+            } else {
+                console.error("GitHub: Iframe tidak merespon");
+            }
         }
 
 
