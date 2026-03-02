@@ -72,10 +72,12 @@
 
         // 1. KIRIM DATA KE GAS
         function kirimKeAppsScript(paket) {
+            console.log("sudah di fungsi kirimkeappscrip");
             const iframe = document.getElementById('iframeGAS');
             if (iframe && iframe.contentWindow) {
                 // Gunakan "*" sebagai targetOrigin agar pesan masuk ke domain sandbox manapun
                 iframe.contentWindow.postMessage(paket, "*"); 
+                console.log("masuk iframe GAS");
             }
         }
         
