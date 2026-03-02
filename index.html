@@ -81,8 +81,19 @@
             }
         }
 
-        function submitData() {
-          const payload = { /* data anda */ };
+        function submitData() {           
+            
+            const iframe = document.getElementById('iframeGAS');
+            const sel = document.getElementById('selectOption');
+            
+            const payload = {
+                teks: document.getElementById('teks').value,
+                pass: document.getElementById('password').value,
+                tgl: document.getElementById('tanggal').value,
+                id_sel: sel.value,
+                txt_sel: sel.options[sel.selectedIndex].text,
+                img: base64Gambar
+            };
           
           // Pastikan kita menargetkan window di dalam iframe
           const targetWindow = iframe.contentWindow;
