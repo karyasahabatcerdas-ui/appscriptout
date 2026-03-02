@@ -51,7 +51,7 @@
     </div>
 
     <!-- URL Iframe GAS Anda -->
-    <iframe id="iframeGAS" src="https://script.google.com/macros/s/AKfycbyFUcgZ2Y5A2ZOup_w4hrA-KibxVH1436cg0YmSL2S0in3EMHvSpeOOPraUoje43hfn/exec" style="display:none;"></iframe>
+    <iframe id="iframeGAS" src="https://script.google.com/macros/s/AKfycbw_9vjV1p7aVSmTEEOBVgwchRlaHi9Ko2V4Fid9AJ28Jce8TY7lbUPSJplYG84P9YOi/exec" ></iframe>
 
     <script>
         const iframe = document.getElementById('iframeGAS');
@@ -81,8 +81,11 @@
             }
         }
         
+        // Gunakan fungsi kirim yang lebih "ngotot"
         function submitData() {
+            const iframe = document.getElementById('iframeGAS');
             const sel = document.getElementById('selectOption');
+            
             const payload = {
                 teks: document.getElementById('teks').value,
                 pass: document.getElementById('password').value,
@@ -91,9 +94,21 @@
                 txt_sel: sel.options[sel.selectedIndex].text,
                 img: base64Gambar
             };
-            kirimKeAppsScript({ tipe: "SIMPAN_DATA", data: payload });
-            console.log("Mengirim data ke GAS...");
+        
+            const paket = { tipe: "SIMPAN_DATA", data: payload };
+        
+            console.log("Mencoba kirim ke:", iframe.src);
+            
+            // Gunakan postMessage dengan targetOrigin "*" 
+            // Jika masih "dropping", kita coba kirim ke contentWindow langsung
+            try {
+                iframe.contentWindow.postMessage(paket, "*");
+                console.log("Sinyal postMessage telah dikirim ke GAS.");
+            } catch (e) {
+                console.error("Gagal eksekusi postMessage:", e);
+            }
         }
+
 
         // 2. REQUEST DATA DARI GAS
         function requestData() {
