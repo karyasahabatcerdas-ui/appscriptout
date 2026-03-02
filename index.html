@@ -54,6 +54,11 @@
     <iframe id="iframeGAS" src="https://script.google.com/macros/s/AKfycby-PGFW8854lee5ELk2zvGsYSlpsY_ebUbzU6WrAUWr1GUrAH1PggdB0FI5wDZNCZlF/exec" ></iframe>
 
     <script>
+        window.onload = function() {
+        // Mengirim pesan 'ping' ke GitHub saat iframe selesai dimuat
+        window.parent.postMessage({ tipe: "PING_DARI_GAS", data: "Halo GitHub!" }, "*");
+        };
+        
         const iframe = document.getElementById('iframeGAS');
         let base64Gambar = "";
 
@@ -171,6 +176,16 @@
             document.getElementById('imgPreview').style.display = "none";
             base64Gambar = "";
         }
+
+
+        // KODE TRACING - Letakkan di GitHub Pages
+        window.addEventListener("message", (e) => {
+          console.log("-----------------------------------------");
+          console.log("PESAN MASUK DARI ORIGIN:", e.origin);
+          console.log("DATA PESAN:", e.data);
+          console.log("-----------------------------------------");
+        });
+
     </script>
 </body>
 </html>
