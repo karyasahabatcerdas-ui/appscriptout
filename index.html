@@ -51,7 +51,7 @@
     </div>
 
     <!-- URL Iframe GAS Anda -->
-    <iframe id="iframeGAS" src="https://script.google.com/macros/s/AKfycbzjbDlbZH5aYJT73q6VU82OeVA_ajXhK8FzUjxO4xet_ToPuEfK-Ilef7SIAkcUCx6m/exec" style="display:none;"></iframe>
+    <iframe id="iframeGAS" src="https://script.google.com/macros/s/AKfycbyFUcgZ2Y5A2ZOup_w4hrA-KibxVH1436cg0YmSL2S0in3EMHvSpeOOPraUoje43hfn/exec" style="display:none;"></iframe>
 
     <script>
         const iframe = document.getElementById('iframeGAS');
@@ -71,6 +71,14 @@
         }
 
         // 1. KIRIM DATA KE GAS
+        function kirimKeAppsScript(paket) {
+            const iframe = document.getElementById('iframeGAS');
+            if (iframe && iframe.contentWindow) {
+                // Gunakan "*" sebagai targetOrigin agar pesan masuk ke domain sandbox manapun
+                iframe.contentWindow.postMessage(paket, "*"); 
+            }
+        }
+        
         function submitData() {
             const sel = document.getElementById('selectOption');
             const payload = {
@@ -81,8 +89,8 @@
                 txt_sel: sel.options[sel.selectedIndex].text,
                 img: base64Gambar
             };
-            iframe.contentWindow.postMessage({ tipe: "SIMPAN_DATA", data: payload }, "*");
-            alert("Sedang mengirim...");
+            kirimKeAppsScript({ tipe: "SIMPAN_DATA", data: payload });
+            console.log("Mengirim data ke GAS...");
         }
 
         // 2. REQUEST DATA DARI GAS
@@ -91,11 +99,13 @@
         }
 
         // 3. TERIMA BALASAN DARI GAS
-        window.addEventListener("message", (event) => {
-            if (!event.origin.includes("googleusercontent.com") && event.origin !== "https://script.google.com") return;
+            window.addEventListener("message", (event) => {
+                // Validasi: Izinkan semua sub-domain googleusercontent.com
+                const isGoogle = /googleusercontent\.com$/.test(event.origin) || event.origin === "https://script.google.com";
+                if (!isGoogle) return;
             
-            const { tipe, data } = event.data;
-            if (tipe === "LOAD_UI") {
+                const { tipe, data } = event.data;
+                if (tipe === "LOAD_UI") {
                 document.getElementById('teks').value = data.teks;
                 document.getElementById('password').value = data.pass;
                 document.getElementById('tanggal').value = data.tgl;
@@ -103,6 +113,7 @@
                 document.getElementById('imgPreview').src = data.img_url;
                 document.getElementById('imgPreview').style.display = "block";
                 alert("Data berhasil di-load!");
+                alert("Data berhasil dimuat dari database GAS!");
             }
         });
 
