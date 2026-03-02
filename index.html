@@ -51,7 +51,7 @@
     </div>
 
     <!-- URL Iframe GAS Anda -->
-    <iframe id="iframeGAS" src="https://script.google.com/macros/s/AKfycby-PGFW8854lee5ELk2zvGsYSlpsY_ebUbzU6WrAUWr1GUrAH1PggdB0FI5wDZNCZlF/exec" ></iframe>
+    <iframe id="iframeGAS" src="https://script.google.com/macros/s/AKfycbwAl-ESptbnKCoo4vroQouNr3eQNcPy4glosA4fiTKX89fj8UH7btkoiIzXUhmHym7q/exec" ></iframe>
 
     <script>
         window.onload = function() {
@@ -88,32 +88,29 @@
 
         function submitData() {
             const iframe = document.getElementById('iframeGAS');
-            
-            // Ambil data dari form
             const sel = document.getElementById('selectOption');
+            
             const payload = {
                 teks: document.getElementById('teks').value,
                 pass: document.getElementById('password').value,
                 tgl: document.getElementById('tanggal').value,
                 id_sel: sel.value,
                 txt_sel: sel.options[sel.selectedIndex].text,
-                img: base64Gambar // String Base64
+                img: base64Gambar // Tetap sertakan base64
             };
         
-            // PENTING: Gunakan targetWindow dari iframe secara eksplisit
-            const targetWindow = iframe.contentWindow;
+            // PENTING: Ubah Object menjadi STRING agar tidak di-drop oleh Google
+            const paketString = JSON.stringify({
+                tipe: "SIMPAN_DATA",
+                data: payload
+            });
         
-            if (targetWindow) {
-                console.log("GitHub: Mengirim ke Iframe...");
-                // Paket harus berupa Object sederhana
-                targetWindow.postMessage({
-                    tipe: "SIMPAN_DATA",
-                    data: payload
-                }, "*"); 
-            } else {
-                console.error("GitHub: Iframe tidak merespon");
-            }
+            console.log("GitHub: Mengirim paket string ke GAS...");
+            
+            // Kirim ke contentWindow
+            iframe.contentWindow.postMessage(paketString, "*");
         }
+
 
 
 
