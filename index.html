@@ -51,13 +51,27 @@
     </div>
 
     <!-- URL Iframe GAS Anda -->
-    <iframe id="iframeGAS" src="https://script.google.com/macros/s/AKfycbwAl-ESptbnKCoo4vroQouNr3eQNcPy4glosA4fiTKX89fj8UH7btkoiIzXUhmHym7q/exec" ></iframe>
-
+    <iframe id="iframeGAS" src="https://script.google.com/macros/s/AKfycbxZYD7uT2ZqA9SkTyZbwCwkN25UAGpHV5vW4c4iy8u5DSJIHmjijjba53FyvOYaTMyV/exec" ></iframe>
+    
+        <div style="margin-top: 10px;">
+          <button onclick="testKirim('HIJAU')">Set Iframe Hijau</button>
+          <button onclick="testKirim('MERAH')">Set Iframe Merah</button>
+        </div>
+    
     <script>
         window.onload = function() {
         // Mengirim pesan 'ping' ke GitHub saat iframe selesai dimuat
         window.parent.postMessage({ tipe: "PING_DARI_GAS", data: "Halo GitHub!" }, "*");
         };
+
+        function testKirim(warna) {
+            const iframe = document.getElementById('iframeGAS');
+            console.log("GitHub: Mengirim instruksi warna:", warna);
+            
+            // Kirim string murni tanpa bungkus objek
+            iframe.contentWindow.postMessage(warna, "*");
+          }
+
         
         const iframe = document.getElementById('iframeGAS');
         let base64Gambar = "";
