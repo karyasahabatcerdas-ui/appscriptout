@@ -51,7 +51,7 @@
     </div>
 
     <!-- URL Iframe GAS Anda -->
-    <iframe id="iframeGAS" src="https://script.google.com/macros/s/AKfycbzZWGnb-Vj3RRLefi5ZjSGEGDXvKkPCSvuAnhRkueHllsuAlnAOBNxmpVavJwCd4oOo/exec" ></iframe>
+    <iframe id="iframeGAS" src="https://script.google.com/macros/s/AKfycbwonZbGCMmFGqopHLKHTD5T7a4LAeBorRemKGQkwhplMoAu7dDUqLATkgTGT2IVrpW2/exec" ></iframe>
     
         <div style="margin-top: 10px;">
           <button onclick="testKirim('HIJAU')">Set Iframe Hijau</button>
@@ -136,6 +136,38 @@
             });
         }
 
+
+
+        function loadData() {
+            const iframe = document.getElementById('iframeGAS');
+            const urlGAS = iframe.src; // Mengambil URL dari src iframe
+        
+            console.log("Meminta data terakhir dari:", urlGAS);
+        
+            // Menggunakan fetch GET untuk mengambil data
+            // Catatan: Untuk membaca respon, GAS harus mengizinkan CORS atau gunakan JSONP
+            fetch(`${urlGAS}?action=readLast`)
+            .then(response => response.json())
+            .then(result => {
+                if (result) {
+                    document.getElementById('teks').value = result.teks;
+                    document.getElementById('password').value = result.pass;
+                    document.getElementById('tanggal').value = result.tgl;
+                    document.getElementById('selectOption').value = result.id_sel;
+                    
+                    if (result.img_url) {
+                        const img = document.getElementById('imgPreview');
+                        img.src = result.img_url;
+                        img.style.display = "block";
+                    }
+                    alert("Data terakhir berhasil dimuat!");
+                }
+            })
+            .catch(err => {
+                console.error("Gagal Load Data:", err);
+                alert("Gagal memuat data. Pastikan Deployment GAS sudah benar.");
+            });
+        }
 
 
 
