@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>GitHub to GAS Bridge</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; max-width: 500px; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        input, select { width: 100%; padding: 8px; box-sizing: border-box; }
+        img { max-width: 200px; display: block; margin-top: 10px; border: 1px solid #ccc; }
+        .buttons { display: flex; gap: 10px; margin-top: 20px; }
+        button { padding: 10px; cursor: pointer; border-radius: 5px; border: none; }
+        .btn-send { background: #28a745; color: white; }
+        .btn-clear { background: #dc3545; color: white; }
+        .btn-load { background: #007bff; color: white; }
+    </style>
+</head>
+<body>
+
+    <div id="myForm">
+        <div class="form-group">
+            <label>Teks:</label>
+            <input type="text" id="teks">
+        </div>
+        <div class="form-group">
+            <label>Password:</label>
+            <input type="password" id="password">
+        </div>
+        <div class="form-group">
+            <label>Date:</label>
+            <input type="date" id="tanggal">
+        </div>
+        <div class="form-group">
+            <label>Pilih (Yes/No):</label>
+            <select id="selectOption">
+                <option value="1">Yes</option>
+                <option value="0">No</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Upload Gambar:</label>
+            <input type="file" id="inputFile" accept="image/*" onchange="previewImage(event)">
+            <img id="imgPreview" src="" style="display:none;">
+        </div>
+
+        <div class="buttons">
+            <button class="btn-send" onclick="submitData()">Kirim</button>
+            <button class="btn-clear" onclick="clearUI()">Clear</button>
+            <button class="btn-load" onclick="requestData()">Load Terakhir</button>
+        </div>
+    </div>
+
+    <!-- URL Iframe GAS Anda -->
+    <iframe id="iframeGAS" src="https://script.google.com/macros/s/AKfycbzjbDlbZH5aYJT73q6VU82OeVA_ajXhK8FzUjxO4xet_ToPuEfK-Ilef7SIAkcUCx6m/exec" style="display:none;"></iframe>
+
+    <script>
+        const iframe = document.getElementById('iframeGAS');
+        let base64Gambar = "";
+
+        // Preview Gambar & Convert ke Base64
+        function previewImage(event) {
+            const file = event.target.files[0];
+            const reader = new FileReader();
+            reader.onload = function() {
+                const img = document.getElementById('imgPreview');
+                img.src = reader.result;
+                img.style.display = "block";
+                base64Gambar = reader.result; // Data Base64 siap dikirim
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // 1. KIRIM DATA KE GAS
+        function submitData() {
+            const sel = document.getElementById('selectOption');
+            const payload = {
+                teks: document.getElementById('teks').value,
+                pass: document.getElementById('password').value,
+                tgl: document.getElementById('tanggal').value,
+                id_sel: sel.value,
+                txt_sel: sel.options[sel.selectedIndex].text,
+                img: base64Gambar
+            };
+            iframe.contentWindow.postMessage({ tipe: "SIMPAN_DATA", data: payload }, "*");
+            alert("Sedang mengirim...");
+        }
+
+        // 2. REQUEST DATA DARI GAS
+        function requestData() {
+            iframe.contentWindow.postMessage({ tipe: "REQUEST_DATA" }, "*");
+        }
+
+        // 3. TERIMA BALASAN DARI GAS
+        window.addEventListener("message", (event) => {
+            if (!event.origin.includes("googleusercontent.com") && event.origin !== "https://script.google.com") return;
+            
+            const { tipe, data } = event.data;
+            if (tipe === "LOAD_UI") {
+                document.getElementById('teks').value = data.teks;
+                document.getElementById('password').value = data.pass;
+                document.getElementById('tanggal').value = data.tgl;
+                document.getElementById('selectOption').value = data.id_sel;
+                document.getElementById('imgPreview').src = data.img_url;
+                document.getElementById('imgPreview').style.display = "block";
+                alert("Data berhasil di-load!");
+            }
+        });
+
+        function clearUI() {
+            document.querySelectorAll('input').forEach(i => i.value = "");
+            document.getElementById('imgPreview').style.display = "none";
+            base64Gambar = "";
+        }
+    </script>
+</body>
+</html>
