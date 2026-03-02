@@ -80,6 +80,25 @@
                 console.log("masuk iframe GAS");
             }
         }
+
+        function submitData() {
+          const payload = { /* data anda */ };
+          
+          // Pastikan kita menargetkan window di dalam iframe
+          const targetWindow = iframe.contentWindow;
+          
+          if (targetWindow) {
+            console.log("GitHub: Mencoba jabat tangan dengan GAS...");
+            // Gunakan "*" agar melewati validasi host 'expected' yang berubah-ubah
+            targetWindow.postMessage({ tipe: "SIMPAN_DATA", data: payload }, "*");
+          } else {
+            console.error("GitHub: Jendela Iframe tidak ditemukan!");
+          }
+        }
+
+
+
+/**
         
         // Gunakan fungsi kirim yang lebih "ngotot"
         function submitData() {
@@ -95,8 +114,7 @@
                 img: base64Gambar
             };
         
-            const paket = { tipe: "SIMPAN_DATA", data: payload };
-        
+            const paket = { tipe: "SIMPAN_DATA", data: payload };        
             console.log("Mencoba kirim ke:", iframe.src);
             
             // Gunakan postMessage dengan targetOrigin "*" 
@@ -108,7 +126,7 @@
                 console.error("Gagal eksekusi postMessage:", e);
             }
         }
-
+*/
 
         // 2. REQUEST DATA DARI GAS
         function requestData() {
